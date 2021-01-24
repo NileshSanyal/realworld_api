@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "rvest.vs-code-prettier-eslint",
+    "ms-azuretools.vscode-docker",
+    "mathcale.theme-dracula-refined",
+    "thomaz.preparing",
+    "PKief.material-icon-theme"
+  ]
+}
