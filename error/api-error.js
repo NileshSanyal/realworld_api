@@ -5,8 +5,8 @@ class ApiError {
    * @param {string} message Error message
    */
   constructor(httpCode, message) {
-    this.httpCode = httpCode
-    this.message = message
+    this.httpCode = httpCode;
+    this.message = message;
   }
 
   /**
@@ -15,8 +15,8 @@ class ApiError {
    * @description It handles bad request error of the application
    */
   static badRequest(message) {
-    return new ApiError(422, { errors: { body: message } })
+    return new ApiError(422, { errors: { body: message } });
   }
 }
 
-module.exports = ApiError
+module.exports = ApiError;

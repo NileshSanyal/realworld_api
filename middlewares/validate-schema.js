@@ -1,6 +1,6 @@
 // middleware code for validating validation schemas
 
-const ApiError = require('../error/api-error')
+const ApiError = require('../error/api-error');
 
 /**
  *
@@ -10,16 +10,16 @@ const ApiError = require('../error/api-error')
 function validateSchema(schema) {
   return async (req, res, next) => {
     try {
-      await schema.validate(req.body, { abortEarly: false })
-      next()
+      await schema.validate(req.body, { abortEarly: false });
+      next();
     } catch (err) {
       if (Array.isArray(err.errors)) {
-        next(ApiError.badRequest(err.errors))
+        next(ApiError.badRequest(err.errors));
       } else {
-        next(ApiError.badRequest(err))
+        next(ApiError.badRequest(err));
       }
     }
-  }
+  };
 }
 
-module.exports = validateSchema
+module.exports = validateSchema;

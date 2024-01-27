@@ -14,6 +14,6 @@ exports.slugify = (articleTitle) => {
     .replace(/[^\w\-]+/g, '') /* eslint-disable-line */
     .replace(/\-\-+/g, '-') /* eslint-disable-line */
     .replace(/^-+/, '')
-    .replace(/-+$/, '')
-  return slugifiedTitle
-}
+    .replace(/-+$/, '');
+  return slugifiedTitle;
+};

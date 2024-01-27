@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
 /**
  *
@@ -11,9 +11,9 @@ exports.generateJwtToken = (userObj) => {
   const token = jwt.sign({ _id: userObj._id }, process.env.JWT_SECRET, {
     algorithm: 'HS512',
     expiresIn: '1d',
-  })
-  return token
-}
+  });
+  return token;
+};
 
 /**
  *
@@ -23,6 +23,6 @@ exports.generateJwtToken = (userObj) => {
  * @returns {any} decodedData
  */
 exports.verifyJwtToken = (token) => {
-  const decodedData = jwt.verify(token, process.env.JWT_SECRET, { algorithms: 'HS512' })
-  return decodedData
-}
+  const decodedData = jwt.verify(token, process.env.JWT_SECRET, { algorithms: 'HS512' });
+  return decodedData;
+};

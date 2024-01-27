@@ -1,5 +1,5 @@
-const { Comment } = require('../models/comment.model')
-const { Article } = require('../models/article.model')
+const { Comment } = require('../models/comment.model');
+const { Article } = require('../models/article.model');
 
 class CommentService {
   /**
@@ -11,23 +11,23 @@ class CommentService {
    * @returns {Promise<Document>} existingArticle
    */
   static async saveComment(userId, commentBody, articleSlug) {
-    const newComment = new Comment()
-    newComment.body = commentBody.body
-    newComment.author = userId
+    const newComment = new Comment();
+    newComment.body = commentBody.body;
+    newComment.author = userId;
     const existingArticle = await Article.findOne(
       { slug: articleSlug },
       { _id: 1, body: 1, createdAt: 1, updatedAt: 1 }
-    ).populate('author', '-_id username bio image following')
+    ).populate('author', '-_id username bio image following');
 
     if (existingArticle) {
-      newComment.article = existingArticle._id
-      const savedComment = await newComment.save()
+      newComment.article = existingArticle._id;
+      const savedComment = await newComment.save();
       if (savedComment) {
-        const commentID = savedComment._id
-        await Article.findByIdAndUpdate(existingArticle._id, { comments: commentID })
+        const commentID = savedComment._id;
+        await Article.findByIdAndUpdate(existingArticle._id, { comments: commentID });
       }
     }
-    return existingArticle
+    return existingArticle;
   }
 
   /**
@@ -37,8 +37,8 @@ class CommentService {
    * @returns {Promise<Document>} comment
    */
   static async getComment(commentId) {
-    const comment = await Comment.findById(commentId)
-    return comment
+    const comment = await Comment.findById(commentId);
+    return comment;
   }
 
   /**
@@ -48,13 +48,13 @@ class CommentService {
    * @returns {Promise<Document>} comments
    */
   static async getAllComments(articleSlug) {
-    const existingArticle = await Article.findOne({ slug: articleSlug }, { _id: 1 })
+    const existingArticle = await Article.findOne({ slug: articleSlug }, { _id: 1 });
     if (existingArticle) {
       const getCommentForExistingArticle = await Comment.findOne(
         { article: existingArticle._id },
         { article: 0, __v: 0 }
-      ).populate('author', '-_id username bio image following')
-      return getCommentForExistingArticle
+      ).populate('author', '-_id username bio image following');
+      return getCommentForExistingArticle;
     }
   }
 
@@ -67,26 +67,26 @@ class CommentService {
    * @returns {boolean} Returns whether the delete operation is successful or not
    */
   static async removeComment(userId, articleSlug, commentId) {
-    const commentByLoggedInUser = await Comment.findOne({ author: userId })
-    const articleId = commentByLoggedInUser.article
+    const commentByLoggedInUser = await Comment.findOne({ author: userId });
+    const articleId = commentByLoggedInUser.article;
 
-    const articleInfo = await Article.findOne({ slug: articleSlug })
+    const articleInfo = await Article.findOne({ slug: articleSlug });
     if (articleInfo) {
-      const removedComment = await Comment.findByIdAndDelete(commentId)
+      const removedComment = await Comment.findByIdAndDelete(commentId);
       if (removedComment) {
         const isSuccess = await Article.findByIdAndUpdate(
           articleId,
           { $pull: { comments: commentId } },
           { useFindAndModify: false }
-        )
+        );
         if (isSuccess) {
-          return true
+          return true;
         } else {
-          return false
+          return false;
         }
       }
     }
   }
 }
 
-module.exports = CommentService
+module.exports = CommentService;

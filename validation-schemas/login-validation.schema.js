@@ -1,4 +1,4 @@
-const yup = require('yup')
+const yup = require('yup');
 /**
  * @description The schema to check against when user tries to login
  */
@@ -10,4 +10,4 @@ module.exports = yup.object().shape({
       .email('Invalid email address'),
     password: yup.string().required('Password is a required field'),
   }),
-})
+});

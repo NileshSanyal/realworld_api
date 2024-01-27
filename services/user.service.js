@@ -1,6 +1,6 @@
-const { User } = require('../models/user.model')
-const { hashPassword, verifyPassword } = require('../helpers/hash-verify.helper')
-const { generateJwtToken } = require('../helpers/jwt.helper')
+const { User } = require('../models/user.model');
+const { hashPassword, verifyPassword } = require('../helpers/hash-verify.helper');
+const { generateJwtToken } = require('../helpers/jwt.helper');
 
 class UserService {
   /**
@@ -10,19 +10,19 @@ class UserService {
    * @returns {Promise<document>} userSaved
    */
   static async saveUser(userObj) {
-    const user = await User.findOne({ email: userObj.email })
+    const user = await User.findOne({ email: userObj.email });
     if (user) {
-      throw new Error('User already exists. Please use another email address')
+      throw new Error('User already exists. Please use another email address');
     } else {
-      const newUser = new User()
-      newUser.username = userObj.username
-      newUser.email = userObj.email
+      const newUser = new User();
+      newUser.username = userObj.username;
+      newUser.email = userObj.email;
 
-      const hashedPassword = await hashPassword(userObj.password)
+      const hashedPassword = await hashPassword(userObj.password);
 
-      newUser.password = hashedPassword
-      const userSaved = await newUser.save()
-      return userSaved
+      newUser.password = hashedPassword;
+      const userSaved = await newUser.save();
+      return userSaved;
     }
   }
 
@@ -33,25 +33,25 @@ class UserService {
    * @returns {Promise<document>} userDetails
    */
   static async loginUser(loginDetails) {
-    let userDetails = {}
-    const user = await User.findOne({ email: loginDetails.email })
+    let userDetails = {};
+    const user = await User.findOne({ email: loginDetails.email });
     if (user) {
-      const isVerified = await verifyPassword(loginDetails.password, user.password)
+      const isVerified = await verifyPassword(loginDetails.password, user.password);
       if (isVerified) {
-        const token = generateJwtToken(user)
+        const token = generateJwtToken(user);
         userDetails = {
           email: user.email,
           token,
           username: user.username,
           bio: user.bio,
           image: user.image,
-        }
-        return userDetails
+        };
+        return userDetails;
       } else {
-        throw new Error('Invalid Email or password')
+        throw new Error('Invalid Email or password');
       }
     } else {
-      throw new Error('User does not exist')
+      throw new Error('User does not exist');
     }
   }
 
@@ -66,8 +66,8 @@ class UserService {
       _id: 0,
       __v: 0,
       password: 0,
-    })
-    return currentUserDetails
+    });
+    return currentUserDetails;
   }
 
   /**
@@ -79,36 +79,36 @@ class UserService {
    */
   static async updateUser(userId, updatedUserData) {
     try {
-      let { email, username, password, image, bio } = updatedUserData
-      const updateUserObj = {}
+      let { email, username, password, image, bio } = updatedUserData;
+      const updateUserObj = {};
       if (password !== undefined) {
-        password = await hashPassword(password)
-        updateUserObj.password = password
+        password = await hashPassword(password);
+        updateUserObj.password = password;
       }
 
       if (email !== undefined) {
-        updateUserObj.email = email
+        updateUserObj.email = email;
       }
 
       if (username !== undefined) {
-        updateUserObj.username = username
+        updateUserObj.username = username;
       }
 
       if (image !== undefined) {
-        updateUserObj.image = image
+        updateUserObj.image = image;
       }
 
       if (bio !== undefined) {
-        updateUserObj.bio = bio
+        updateUserObj.bio = bio;
       }
       const updatedUserDetails = await User.findByIdAndUpdate(userId, updateUserObj, {
         new: true,
         useFindAndModify: false,
         fields: { _id: 0, __v: 0 },
-      })
-      return updatedUserDetails
+      });
+      return updatedUserDetails;
     } catch (err) {
-      throw new Error(err)
+      throw new Error(err);
     }
   }
 
@@ -122,8 +122,8 @@ class UserService {
     const userProfileDetails = await User.findOne(
       { username: userName },
       { _id: 0, __v: 0, email: 0, password: 0 }
-    )
-    return userProfileDetails
+    );
+    return userProfileDetails;
   }
 
   /**
@@ -134,14 +134,14 @@ class UserService {
    * @description It adds the functionality to follow an author
    */
   static async followUser(authorName, userId) {
-    const authorProfileDetails = await User.findOne({ username: authorName })
+    const authorProfileDetails = await User.findOne({ username: authorName });
     if (authorProfileDetails) {
-      const authorId = authorProfileDetails._id
+      const authorId = authorProfileDetails._id;
 
-      const followerDetails = await User.findById(userId)
+      const followerDetails = await User.findById(userId);
 
       if (followerDetails.following.indexOf(authorId) === -1) {
-        followerDetails.following.push(authorId)
+        followerDetails.following.push(authorId);
       }
 
       const updatedfollowerDetails = await User.findByIdAndUpdate(
@@ -152,8 +152,8 @@ class UserService {
           useFindAndModify: false,
           fields: { _id: 0, __v: 0, password: 0, favorites: 0 },
         }
-      )
-      return updatedfollowerDetails
+      );
+      return updatedfollowerDetails;
     }
   }
 
@@ -165,19 +165,19 @@ class UserService {
    * @description It adds the functionality to unfollow an author
    */
   static async unFollowUser(authorName, userId) {
-    const authorProfileDetails = await User.findOne({ username: authorName })
+    const authorProfileDetails = await User.findOne({ username: authorName });
     if (authorProfileDetails) {
-      const authorId = authorProfileDetails._id
+      const authorId = authorProfileDetails._id;
 
-      const followerDetails = await User.findById(userId)
+      const followerDetails = await User.findById(userId);
 
       const foundFollower = followerDetails.following.find(
         (author) => author === authorId
-      )
+      );
       if (foundFollower !== 'undefined') {
-        const authorIndex = followerDetails.following.indexOf(authorId)
+        const authorIndex = followerDetails.following.indexOf(authorId);
         if (authorIndex > -1) {
-          followerDetails.following.splice(authorIndex, 1)
+          followerDetails.following.splice(authorIndex, 1);
         }
 
         const updatedfollowerDetails = await User.findByIdAndUpdate(
@@ -188,8 +188,8 @@ class UserService {
             useFindAndModify: false,
             fields: { _id: 0, __v: 0, password: 0, favorites: 0 },
           }
-        )
-        return updatedfollowerDetails
+        );
+        return updatedfollowerDetails;
       }
     }
   }
@@ -202,17 +202,17 @@ class UserService {
    * @returns {Promise<document>} articleId
    */
   static async isAlreadyFavorited(articleId, userId) {
-    const articleDetails = await User.findById(userId)
+    const articleDetails = await User.findById(userId);
     if (articleDetails.favorites.indexOf(articleId) === -1) {
-      articleDetails.favorites.push(articleId)
+      articleDetails.favorites.push(articleId);
 
       const favorited = await User.findByIdAndUpdate(
         userId,
         { favorites: articleDetails.favorites },
         { new: true, useFindAndModify: false }
-      )
+      );
 
-      return favorited
+      return favorited;
     }
   }
 
@@ -224,25 +224,25 @@ class UserService {
    * @returns {string} articleId
    */
   static async isRemovedFromFavorited(articleId, userId) {
-    const userDetails = await User.findById(userId)
+    const userDetails = await User.findById(userId);
     const foundFavoriteArticle = userDetails.favorites.find(
       (favoriteArticleId) => favoriteArticleId === articleId
-    )
+    );
     if (foundFavoriteArticle !== 'undefined') {
-      const articleIndex = userDetails.favorites.indexOf(articleId)
+      const articleIndex = userDetails.favorites.indexOf(articleId);
       if (articleIndex > -1) {
-        userDetails.favorites.splice(articleIndex, 1)
+        userDetails.favorites.splice(articleIndex, 1);
       }
 
       await User.findByIdAndUpdate(
         userId,
         { favorites: userDetails.favorites },
         { new: true, useFindAndModify: false }
-      )
+      );
 
-      return articleId
+      return articleId;
     }
   }
 }
 
-module.exports = UserService
+module.exports = UserService;

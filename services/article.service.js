@@ -1,9 +1,12 @@
-const { Article } = require('../models/article.model')
-const { currentUser } = require('../services/user.service')
-const { slugify } = require('../helpers/slugify.helper')
-const { User } = require('../models/user.model')
+const { Article } = require('../models/article.model');
+const { currentUser } = require('../services/user.service');
+const { slugify } = require('../helpers/slugify.helper');
+const { User } = require('../models/user.model');
 
-const { isAlreadyFavorited, isRemovedFromFavorited } = require('../services/user.service')
+const {
+  isAlreadyFavorited,
+  isRemovedFromFavorited,
+} = require('../services/user.service');
 
 class ArticleService {
   /**
@@ -13,23 +16,23 @@ class ArticleService {
    * @description Creates an article
    */
   static async saveArticle(userId, articleObj) {
-    const newArticle = new Article()
-    newArticle.title = articleObj.title
-    newArticle.slug = slugify(articleObj.title)
-    newArticle.description = articleObj.description
-    newArticle.body = articleObj.body
+    const newArticle = new Article();
+    newArticle.title = articleObj.title;
+    newArticle.slug = slugify(articleObj.title);
+    newArticle.description = articleObj.description;
+    newArticle.body = articleObj.body;
 
     if (articleObj.tagList) {
       if (Array.isArray(articleObj.tagList) && articleObj.tagList.length > 0) {
-        newArticle.tagList = articleObj.tagList
+        newArticle.tagList = articleObj.tagList;
       }
     }
-    const userDetails = await currentUser(userId)
+    const userDetails = await currentUser(userId);
 
     if (userDetails) {
-      newArticle.author = userId
-      const savedArticleObj = await newArticle.save()
-      return savedArticleObj
+      newArticle.author = userId;
+      const savedArticleObj = await newArticle.save();
+      return savedArticleObj;
     }
   }
 
@@ -42,25 +45,25 @@ class ArticleService {
    * @description It updates an existing article
    */
   static async updateArticle(slug, userId, articleObj) {
-    const articleToUpdate = await Article.findOne({ slug: slug })
-    let updatedArticle
-    const updateArticleObj = {}
+    const articleToUpdate = await Article.findOne({ slug: slug });
+    let updatedArticle;
+    const updateArticleObj = {};
     if (articleToUpdate) {
       if (articleToUpdate.author.toString() === userId.toString()) {
-        const articleId = articleToUpdate._id
+        const articleId = articleToUpdate._id;
 
-        updatedArticle = new Article()
+        updatedArticle = new Article();
 
         if (articleObj.title !== undefined) {
-          updateArticleObj.title = articleObj.title
-          updateArticleObj.slug = slugify(articleObj.title)
+          updateArticleObj.title = articleObj.title;
+          updateArticleObj.slug = slugify(articleObj.title);
         }
         if (articleObj.description !== undefined) {
-          updateArticleObj.description = articleObj.description
+          updateArticleObj.description = articleObj.description;
         }
 
         if (articleObj.body !== undefined) {
-          updateArticleObj.body = articleObj.body
+          updateArticleObj.body = articleObj.body;
         }
 
         if (articleToUpdate.tagList) {
@@ -68,22 +71,22 @@ class ArticleService {
             Array.isArray(articleToUpdate.tagList) &&
             articleToUpdate.tagList.length > 0
           ) {
-            updatedArticle.tagList = articleToUpdate.tagList
+            updatedArticle.tagList = articleToUpdate.tagList;
           }
         }
-        const userDetails = await currentUser(userId)
+        const userDetails = await currentUser(userId);
         if (userDetails) {
-          updatedArticle.author = userId
+          updatedArticle.author = userId;
         }
         updatedArticle = await Article.findByIdAndUpdate(articleId, updateArticleObj, {
           new: true,
           useFindAndModify: false,
-        })
+        });
       } else {
-        throw new Error('Permission denied for updating the article')
+        throw new Error('Permission denied for updating the article');
       }
     }
-    return updatedArticle
+    return updatedArticle;
   }
 
   /**
@@ -94,16 +97,16 @@ class ArticleService {
    * @description It removes an existing article
    */
   static async removeArticle(slug, userId) {
-    const articleToDelete = await Article.findOne({ slug: slug })
+    const articleToDelete = await Article.findOne({ slug: slug });
     if (articleToDelete) {
       if (articleToDelete.author.toString() === userId.toString()) {
-        const articleId = articleToDelete._id
+        const articleId = articleToDelete._id;
         if (articleId) {
-          const removedArticle = await Article.findByIdAndDelete(articleId)
-          return removedArticle
+          const removedArticle = await Article.findByIdAndDelete(articleId);
+          return removedArticle;
         }
       } else {
-        throw new Error('Permission denied for deleting the article')
+        throw new Error('Permission denied for deleting the article');
       }
     }
   }
@@ -115,9 +118,9 @@ class ArticleService {
    * @description It retrieves an existing article
    */
   static async getArticle(slug) {
-    const article = await Article.findOne({ slug: slug })
+    const article = await Article.findOne({ slug: slug });
     if (article) {
-      return article
+      return article;
     }
   }
 
@@ -127,47 +130,47 @@ class ArticleService {
    * @description It retrieves all existing articles
    */
   static async getAllArticles(queryString) {
-    const query = {}
-    let limit = 20
-    let offset = 0
+    const query = {};
+    let limit = 20;
+    let offset = 0;
 
     if (typeof queryString.limit !== 'undefined') {
-      limit = queryString.limit
+      limit = queryString.limit;
     }
 
     if (typeof queryString.offset !== 'undefined') {
-      offset = queryString.offset
+      offset = queryString.offset;
     }
 
     if (typeof queryString.tag !== 'undefined') {
-      query.tagList = { $in: [queryString.tag] }
+      query.tagList = { $in: [queryString.tag] };
     }
 
     const author = queryString.author
       ? await User.findOne({ username: queryString.author })
-      : null
+      : null;
 
     const favoriter = queryString.favorited
       ? await User.findOne({ username: queryString.favorited })
-      : null
+      : null;
 
     if (author) {
-      query.author = author._id
+      query.author = author._id;
     }
 
     if (favoriter) {
-      query._id = { $in: favoriter.favorites }
+      query._id = { $in: favoriter.favorites };
     } else if (queryString.favorited) {
-      query._id = { $in: [] }
+      query._id = { $in: [] };
     }
 
     const articles = await Article.find(query)
       .limit(parseInt(limit))
       .skip(parseInt(offset))
       .sort({ createdAt: 'desc' })
-      .populate('author', 'username email bio image favorites following')
+      .populate('author', 'username email bio image favorites following');
 
-    return articles
+    return articles;
   }
 
   /**
@@ -178,25 +181,25 @@ class ArticleService {
    * @description It returns all articles of the author who was followed by an user
    */
   static async feedArticles(userId, queryString) {
-    let limit = 20
-    let offset = 0
+    let limit = 20;
+    let offset = 0;
 
     if (typeof queryString.limit !== 'undefined') {
-      limit = queryString.limit
+      limit = queryString.limit;
     }
 
     if (typeof queryString.offset !== 'undefined') {
-      offset = queryString.offset
+      offset = queryString.offset;
     }
 
-    const userData = await currentUser(userId)
+    const userData = await currentUser(userId);
 
     if (userData) {
       const articles = await Article.find({ author: { $in: userData.following } })
         .limit(limit)
         .skip(offset)
-        .populate('author')
-      if (articles) return articles
+        .populate('author');
+      if (articles) return articles;
     }
   }
 
@@ -208,18 +211,18 @@ class ArticleService {
    * @returns {Promise<document>} favoritedArticleData
    */
   static async favoriteArticle(userId, articleSlug) {
-    const articleDetails = await Article.findOne({ slug: articleSlug })
-    const articleId = articleDetails._id
+    const articleDetails = await Article.findOne({ slug: articleSlug });
+    const articleId = articleDetails._id;
 
     if (articleDetails) {
-      const favoritedArticleId = isAlreadyFavorited(articleId, userId)
+      const favoritedArticleId = isAlreadyFavorited(articleId, userId);
       if (favoritedArticleId) {
         const favoritedArticleData = await Article.findByIdAndUpdate(
           articleId,
           { $inc: { favoritesCount: 1 } },
           { new: true, useFindAndModify: false, fields: { _id: 0, __v: 0 } }
-        ).populate('author', '-_id username bio image following')
-        return favoritedArticleData
+        ).populate('author', '-_id username bio image following');
+        return favoritedArticleData;
       }
     }
   }
@@ -232,18 +235,18 @@ class ArticleService {
    * @returns {Promise<document>} unFavoritedArticleData
    */
   static async unFavoriteArticle(userId, articleSlug) {
-    const articleDetails = await Article.findOne({ slug: articleSlug })
-    const articleId = articleDetails._id
+    const articleDetails = await Article.findOne({ slug: articleSlug });
+    const articleId = articleDetails._id;
 
     if (articleDetails) {
-      const favoritedArticleId = isRemovedFromFavorited(articleId, userId)
+      const favoritedArticleId = isRemovedFromFavorited(articleId, userId);
       if (favoritedArticleId) {
         const favoritedArticleData = await Article.findByIdAndUpdate(
           articleId,
           { $inc: { favoritesCount: -1 } },
           { new: true, useFindAndModify: false, fields: { _id: 0, __v: 0 } }
-        ).populate('author', '-_id username bio image following')
-        return favoritedArticleData
+        ).populate('author', '-_id username bio image following');
+        return favoritedArticleData;
       }
     }
   }
@@ -253,8 +256,8 @@ class ArticleService {
    * @returns {Promise<document[]>} tags
    */
   static async getAllTags() {
-    const tags = await Article.find().distinct('tagList')
-    return tags
+    const tags = await Article.find().distinct('tagList');
+    return tags;
   }
 }
-module.exports = ArticleService
+module.exports = ArticleService;

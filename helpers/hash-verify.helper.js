@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt')
-const SALT_ROUNDS = 12
+const bcrypt = require('bcrypt');
+const SALT_ROUNDS = 12;
 
 /**
  *
@@ -8,10 +8,10 @@ const SALT_ROUNDS = 12
  * for storing password
  */
 exports.hashPassword = async (plainTextPassword) => {
-  const salt = await bcrypt.genSalt(SALT_ROUNDS)
-  const hash = await bcrypt.hash(plainTextPassword, salt)
-  return hash
-}
+  const salt = await bcrypt.genSalt(SALT_ROUNDS);
+  const hash = await bcrypt.hash(plainTextPassword, salt);
+  return hash;
+};
 
 /**
  *
@@ -21,6 +21,6 @@ exports.hashPassword = async (plainTextPassword) => {
  * @description Checks if plaintext password matches with hashed password
  */
 exports.verifyPassword = async (plainTextPassword, hashedPassword) => {
-  const isVerified = await bcrypt.compare(plainTextPassword, hashedPassword)
-  return isVerified
-}
+  const isVerified = await bcrypt.compare(plainTextPassword, hashedPassword);
+  return isVerified;
+};
