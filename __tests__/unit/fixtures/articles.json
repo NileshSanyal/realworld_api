@@ -1,0 +1,23 @@
+{
+  "articles": [
+      {
+        "_id": "5478ad4347dkhs",
+        "title": "Sample first article title",
+        "description": "Sample first article description",
+        "body": "Sample first article body"
+      },
+      {
+        "_id": "6478ad4347dkhs",
+        "title": "Sample second article title",
+        "description": "Sample second article description",
+        "body": "Sample second article body"
+      },
+      {
+        "_id": "7478ad4347dkhs",
+        "title": "Sample third article title",
+        "description": "Sample third article description",
+        "body": "Sample third article body"
+      }
+
+    ]
+}

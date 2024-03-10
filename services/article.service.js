@@ -96,7 +96,7 @@ class ArticleService {
    * @returns {Promise<document>} removedArticle
    * @description It removes an existing article
    */
-  static async removeArticle(slug, userId) {
+  static async deleteArticle(slug, userId) {
     const articleToDelete = await Article.findOne({ slug: slug });
     if (articleToDelete) {
       if (articleToDelete.author.toString() === userId.toString()) {
@@ -117,7 +117,7 @@ class ArticleService {
    * @returns {Promise<document>} article
    * @description It retrieves an existing article
    */
-  static async getArticle(slug) {
+  static async getArticleData(slug) {
     const article = await Article.findOne({ slug: slug });
     if (article) {
       return article;
@@ -129,7 +129,7 @@ class ArticleService {
    * @returns {Promise<document[]>} articles
    * @description It retrieves all existing articles
    */
-  static async getAllArticles(queryString) {
+  static async getAllArticlesData(queryString) {
     const query = {};
     let limit = 20;
     let offset = 0;
@@ -210,7 +210,7 @@ class ArticleService {
    * @description It allows to mark an article as favorite by the user
    * @returns {Promise<document>} favoritedArticleData
    */
-  static async favoriteArticle(userId, articleSlug) {
+  static async markArticleAsFavorite(userId, articleSlug) {
     const articleDetails = await Article.findOne({ slug: articleSlug });
     const articleId = articleDetails._id;
 
@@ -234,7 +234,7 @@ class ArticleService {
    * @description It allows to mark an article as unfavorite by the user
    * @returns {Promise<document>} unFavoritedArticleData
    */
-  static async unFavoriteArticle(userId, articleSlug) {
+  static async markArticleAsUnfavorite(userId, articleSlug) {
     const articleDetails = await Article.findOne({ slug: articleSlug });
     const articleId = articleDetails._id;
 

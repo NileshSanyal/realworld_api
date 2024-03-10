@@ -9,7 +9,7 @@ const {
 } = require('../services/user.service');
 
 exports.registerUser = async (req, res, next) => {
-  saveUser(req.body.user)
+  return saveUser(req.body.user)
     .then((user) => {
       if (user) {
         return res.status(200).json({ message: 'User registered successfully' });
@@ -19,7 +19,7 @@ exports.registerUser = async (req, res, next) => {
 };
 
 exports.loginUser = async (req, res, next) => {
-  loginUser(req.body.user)
+  return loginUser(req.body.user)
     .then((userData) => {
       if (userData) {
         return res.status(200).json({ user: userData });
@@ -29,7 +29,7 @@ exports.loginUser = async (req, res, next) => {
 };
 
 exports.currentUser = async (req, res, next) => {
-  currentUser(req.user._id)
+  return currentUser(req.user._id)
     .then((currentUserData) => {
       if (currentUserData) {
         return res.status(200).json({ user: currentUserData });
@@ -39,7 +39,7 @@ exports.currentUser = async (req, res, next) => {
 };
 
 exports.updateUser = async (req, res, next) => {
-  updateUser(req.user._id, req.body.user)
+  return updateUser(req.user._id, req.body.user)
     .then((updatedUserData) => {
       if (updatedUserData) {
         return res.status(200).json({ user: updatedUserData });
@@ -51,38 +51,26 @@ exports.updateUser = async (req, res, next) => {
 exports.userProfile = async (req, res, next) => {
   const userName = req.params.username;
   if (userName) {
-    userProfile(userName)
+    return userProfile(userName)
       .then((userProfileData) => {
-        if (userProfileData) {
-          return res.status(200).json({ profile: userProfileData });
-        } else {
-          return res.sendStatus(404);
-        }
+        return res.status(200).json({ profile: userProfileData });
       })
       .catch(next);
   }
 };
 
 exports.followUser = async (req, res, next) => {
-  followUser(req.params.username, req.user._id)
+  return followUser(req.params.username, req.user._id)
     .then((follow) => {
-      if (follow) {
-        return res.status(200).json({ profile: follow });
-      } else {
-        return res.sendStatus(404);
-      }
+      return res.status(200).json({ profile: follow });
     })
     .catch(next);
 };
 
 exports.unFollowUser = async (req, res, next) => {
-  unFollowUser(req.params.username, req.user._id)
+  return unFollowUser(req.params.username, req.user._id)
     .then((unfollow) => {
-      if (unfollow) {
-        return res.status(200).json({ profile: unfollow });
-      } else {
-        return res.sendStatus(404);
-      }
+      return res.status(200).json({ profile: unfollow });
     })
     .catch(next);
 };

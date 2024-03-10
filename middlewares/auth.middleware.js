@@ -1,25 +1,26 @@
 const { verifyJwtToken } = require('../helpers/jwt.helper');
 
-module.exports = function (req, res, next) {
-  const token = req.header('Authorization');
-
-  if (!token) return res.sendStatus(401);
-
+const isAuthenticatedUser = function (req, res, next) {
   try {
-    const jwtTokenPattern = /^Token\s[A-Za-z0-9-_=]+\.[A-Za-z0-9-_=]+\.?[A-Za-z0-9-_.+/=]*$/;
-
-    const tokenFormatMatched = jwtTokenPattern.test(token);
-    let rawToken = '';
-    if (tokenFormatMatched) {
-      rawToken = token.substr(token.indexOf(' ') + 1);
-
-      const decodedData = verifyJwtToken(rawToken);
-      req.user = decodedData;
-      next();
-    } else {
-      return res.sendStatus(401);
+    if (!req?.headers?.authorization?.startsWith('Bearer')) {
+      return res.status(401).json({
+        error: 'Authentication Failed',
+      });
     }
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({
+        error: 'Authentication Failed',
+      });
+    }
+
+    const decodedData = verifyJwtToken(token);
+    req.user = decodedData;
+    next();
   } catch (err) {
-    res.sendStatus(401);
+    res.status(401).json({
+      error: 'Authentication Failed',
+    });
   }
 };
+module.exports = { isAuthenticatedUser };

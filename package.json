@@ -6,7 +6,9 @@
   "scripts": {
     "start": "nodemon server.js",
     "prettier:fix": "eslint --fix . --ext .js",
-    "test": "jest"
+    "jest": "jest --config jest.config.js --coverage",
+    "jest:verbose": "jest --config jest.config.js --verbose",
+    "jest:integration": "jest -runInBand --forceExit --colors -c jest.config.integration.js"
   },
   "keywords": [],
   "author": "Nilesh Sanyal",
@@ -32,7 +34,10 @@
     "eslint-plugin-prettier": "^3.2.0",
     "eslint-plugin-promise": "^4.2.1",
     "jest-html-reporter": "^3.10.2",
+    "mockingoose": "^2.16.2",
+    "node-mocks-http": "^1.14.1",
     "nodemon": "^2.0.6",
+    "npm-run-all": "^4.1.5",
     "prettier": "^2.2.1"
   }
 }

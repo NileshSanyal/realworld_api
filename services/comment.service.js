@@ -64,9 +64,9 @@ class CommentService {
    * @param {string} articleSlug Slug used for the article
    * @param {string} commentId Id of the comment
    * @description It removes comment for an article
-   * @returns {boolean} Returns whether the delete operation is successful or not
+   * @returns Promise{boolean} Returns whether the delete operation is successful or not
    */
-  static async removeComment(userId, articleSlug, commentId) {
+  static async deleteComment(userId, articleSlug, commentId) {
     const commentByLoggedInUser = await Comment.findOne({ author: userId });
     const articleId = commentByLoggedInUser.article;
 
